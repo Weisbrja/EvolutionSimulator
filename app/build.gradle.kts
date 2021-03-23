@@ -13,14 +13,13 @@ application {
 }
 
 javafx {
-	version = "16"
 	modules("javafx.controls")
 }
 
 jlink {
 	addOptions("--strip-debug", "--no-header-files", "--no-man-pages")
 	launcher {
-		name = "launch"
+		name = "Evolution-Simulator"
 	}
 }
 
