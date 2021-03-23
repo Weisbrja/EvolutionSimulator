@@ -18,7 +18,7 @@ javafx {
 }
 
 jlink {
-    addOptions("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages")
+    addOptions("--strip-debug", "--no-header-files", "--no-man-pages")
     launcher {
         name = "launch"
     }
