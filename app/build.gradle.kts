@@ -23,12 +23,13 @@ javafx {
 }
 
 jlink {
-	addOptions("--strip-debug", "--no-header-files", "--no-man-pages")
+	addOptions("--strip-debug", "--no-header-files", "--no-man-pages", "--compress", "2")
 	launcher {
 		name = "Evolution Simulator"
 	}
 	jpackage {
-		args = listOf("--win-menu", "--win-shortcut", "--win-dir-chooser")
+		installerOptions = listOf("--win-menu", "--win-shortcut", "--win-dir-chooser", "--win-per-user-install")
+//		installerType = "deb"
 	}
 }
 
