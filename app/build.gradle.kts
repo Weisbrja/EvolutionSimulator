@@ -28,8 +28,11 @@ jlink {
 		name = "Evolution Simulator"
 	}
 	jpackage {
-		installerOptions = listOf("--win-menu", "--win-shortcut", "--win-dir-chooser", "--win-per-user-install")
-//		installerType = "deb"
+		installerType = project.findProperty("installerType").toString()
+		if (installerType == "msi" || installerType == "exe")
+			installerOptions = listOf("--win-menu", "--win-shortcut", "--win-dir-chooser", "--win-per-user-install")
+		else if (installerType == "deb" || installerType == "rpm")
+			installerOptions = listOf("--linux-shortcut")
 	}
 }
 
