@@ -24,6 +24,10 @@ jlink {
 	}
 }
 
+jpackage {
+	addOptions("--win-menu", "--win-shortcut", "--win-dir-chooser")
+}
+
 dependencies {
 	implementation("javax.vecmath", "vecmath", "1.5.2")
 	implementation("org.apache.commons", "commons-csv", "1.8")
