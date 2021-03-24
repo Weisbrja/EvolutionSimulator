@@ -8,6 +8,11 @@ repositories {
 	mavenCentral()
 }
 
+dependencies {
+	implementation("javax.vecmath", "vecmath", "1.5.2")
+	implementation("org.apache.commons", "commons-csv", "1.8")
+}
+
 application {
 	mainModule.set("de.weisbrja")
 	mainClass.set("de.weisbrja.App")
@@ -22,15 +27,9 @@ jlink {
 	launcher {
 		name = "Evolution-Simulator"
 	}
-}
-
-jpackage {
-	addOptions("--win-menu", "--win-shortcut", "--win-dir-chooser")
-}
-
-dependencies {
-	implementation("javax.vecmath", "vecmath", "1.5.2")
-	implementation("org.apache.commons", "commons-csv", "1.8")
+	jpackage {
+		args = listOf("--win-menu", "--win-shortcut", "--win-dir-chooser")
+	}
 }
 
 modularity.disableEffectiveArgumentsAdjustment()
