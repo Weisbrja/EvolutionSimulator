@@ -25,7 +25,7 @@ javafx {
 jlink {
 	addOptions("--strip-debug", "--no-header-files", "--no-man-pages")
 	launcher {
-		name = "Evolution-Simulator"
+		name = "Evolution Simulator"
 	}
 	jpackage {
 		args = listOf("--win-menu", "--win-shortcut", "--win-dir-chooser")
