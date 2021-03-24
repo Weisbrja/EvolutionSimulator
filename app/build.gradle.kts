@@ -9,6 +9,7 @@ repositories {
 }
 
 application {
+	mainModule.set("de.weisbrja")
 	mainClass.set("de.weisbrja.App")
 }
 
