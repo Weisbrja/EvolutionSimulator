@@ -1,6 +1,7 @@
 plugins {
 	application
 	id("org.openjfx.javafxplugin") version "0.0.9"
+	id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 repositories {
@@ -13,8 +14,8 @@ dependencies {
 }
 
 application {
-	mainModule.set("de.weisbrja")
-	mainClass.set("de.weisbrja.App")
+	mainModule.set("com.weisbrja")
+	mainClass.set("com.weisbrja.App")
 }
 
 javafx {

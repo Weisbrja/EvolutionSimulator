@@ -1,11 +1,11 @@
-module de.weisbrja {
+module com.weisbrja {
 	requires javafx.controls;
 	requires vecmath;
 	requires commons.csv;
-	exports de.weisbrja;
-	exports de.weisbrja.data;
-	exports de.weisbrja.event;
-	exports de.weisbrja.population;
-	exports de.weisbrja.simulation;
-	exports de.weisbrja.view;
+	exports com.weisbrja;
+	exports com.weisbrja.data;
+	exports com.weisbrja.event;
+	exports com.weisbrja.population;
+	exports com.weisbrja.simulation;
+	exports com.weisbrja.view;
 }
