@@ -41,9 +41,9 @@ public class SimulationCanvas extends Pane {
 		graphicsContext.setFill(Color.rgb(60, 180, 255));
 		graphicsContext.fillRect(0d, 0d, canvas.getWidth(), canvas.getHeight());
 
+		graphicsContext.setFill(Color.rgb(50, 150, 200));
 		double width = 100d;
-		for (double i = -cameraPosition.getX() % (2d * width) - width; i <= canvas.getWidth(); i += width * 2d) {
-			graphicsContext.setFill(Color.rgb(50, 150, 200));
+		for (double i = -cameraPosition.getX() % (2d * width) - width; i <= canvas.getWidth(); i += 2d * width) {
 			graphicsContext.fillRect(i, 0d, width, canvas.getHeight());
 		}
 
