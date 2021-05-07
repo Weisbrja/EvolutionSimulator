@@ -15,8 +15,6 @@ import java.util.concurrent.Future;
 
 public class Population {
 
-	private final AppContext appContext;
-
 	private final boolean saveData;
 	private final int simulationCycleCount;
 	private final ExecutorService simulatorExecutorService;
@@ -34,8 +32,7 @@ public class Population {
 	private double medianMutationRate;
 	private double medianStructuralMutationRate;
 
-	public Population(AppContext appContext, boolean saveData, String filenameFitness, String filenameMutationRate, String filenameSpecies, int threadCount, int simulationCycleCount) {
-		this.appContext = appContext;
+	public Population(boolean saveData, String filenameFitness, String filenameMutationRate, String filenameSpecies, int threadCount, int simulationCycleCount) {
 		this.saveData = saveData;
 		this.simulationCycleCount = simulationCycleCount;
 
@@ -47,15 +44,15 @@ public class Population {
 
 		simulatorExecutorService = Executors.newFixedThreadPool(threadCount);
 
-		appContext.getEventBus().listenFor(SimulationModeChangedEvent.class, this::handleSimulationModeChanged);
-		appContext.getEventBus().listenFor(SimulatorDoneEvent.class, event -> handleSimulatorDone());
-		appContext.getEventBus().listenFor(AllSimulatorsDoneEvent.class, event -> handleAllSimulatorsDone());
+		AppContext.getInstance().getEventBus().listenFor(SimulationModeChangedEvent.class, this::handleSimulationModeChanged);
+		AppContext.getInstance().getEventBus().listenFor(SimulatorDoneEvent.class, event -> handleSimulatorDone());
+		AppContext.getInstance().getEventBus().listenFor(AllSimulatorsDoneEvent.class, event -> handleAllSimulatorsDone());
 	}
 
 	private void handleSimulatorDone() {
 		simulatorsDoneCount++;
 		if (simulatorsDoneCount == simulators.length)
-			appContext.getEventBus().emit(new AllSimulatorsDoneEvent());
+			AppContext.getInstance().getEventBus().emit(new AllSimulatorsDoneEvent());
 		else if (simulateGraphically)
 			simulators[simulatorsDoneCount].startGraphically(simulationCycleCount);
 		else if (simulationModeChanged) {
@@ -73,7 +70,7 @@ public class Population {
 					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
 					}
-				appContext.getEventBus().emit(new AllSimulatorsDoneEvent());
+				AppContext.getInstance().getEventBus().emit(new AllSimulatorsDoneEvent());
 			}).start();
 		}
 	}
@@ -110,7 +107,7 @@ public class Population {
 		doReproduction();
 
 		generationCount++;
-		appContext.getEventBus().emit(new GenerationDoneEvent(generationCount, bestFitness, medianFitness));
+		AppContext.getInstance().getEventBus().emit(new GenerationDoneEvent(generationCount, bestFitness, medianFitness));
 
 		startSimulating();
 	}
@@ -119,7 +116,7 @@ public class Population {
 		// initialize the simulators with the given population size
 		simulators = new Simulator[populationSize];
 		for (int i = 0; i < populationSize; i++) {
-			simulators[i] = new Simulator(appContext);
+			simulators[i] = new Simulator();
 			simulators[i].generateRandomCreature();
 		}
 	}
@@ -138,7 +135,7 @@ public class Population {
 					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
 					}
-				appContext.getEventBus().emit(new AllSimulatorsDoneEvent());
+				AppContext.getInstance().getEventBus().emit(new AllSimulatorsDoneEvent());
 			}).start();
 		}
 	}
@@ -188,21 +185,21 @@ public class Population {
 			// get a parent creature based on its probability of being chosen
 			Creature parentCreature = getRandomParentCreature();
 
-			double mutationRate = getMutatedValue(parentCreature.getMutationRate(), appContext.getCreatureMutationRateBoundaries(), 0.01d);
-			double structuralMutationRate = getMutatedValue(parentCreature.getStructuralMutationRate(), appContext.getCreatureStructuralMutationRateBoundaries(), 0.01d);
-			Creature creature = new Creature(appContext, mutationRate, structuralMutationRate);
+			double mutationRate = getMutatedValue(parentCreature.getMutationRate(), AppContext.getInstance().getCreatureMutationRateBoundaries(), 0.01d);
+			double structuralMutationRate = getMutatedValue(parentCreature.getStructuralMutationRate(), AppContext.getInstance().getCreatureStructuralMutationRateBoundaries(), 0.01d);
+			Creature creature = new Creature(mutationRate, structuralMutationRate);
 
 			// copy circles from parent creature
 			for (Circle parentCircle : parentCreature.getCircles()) {
 				double frictionPercentage = getMutatedValue(parentCircle.getFrictionPercentage(), 0d, 1d, mutationRate);
 
-				double radius = getMutatedValue(parentCircle.getRadius(), appContext.getCircleRadiusBoundaries(), mutationRate);
+				double radius = getMutatedValue(parentCircle.getRadius(), AppContext.getInstance().getCircleRadiusBoundaries(), mutationRate);
 
-				double startPositionX = getMutatedValue(parentCircle.getStartPosition().getX(), appContext.getCircleStartPositionBoundaries().getX(), mutationRate);
-				double startPositionY = getMutatedValue(parentCircle.getStartPosition().getY(), appContext.getCircleStartPositionBoundaries().getYMin() - radius, appContext.getCircleStartPositionBoundaries().getYMax() - radius, mutationRate);
+				double startPositionX = getMutatedValue(parentCircle.getStartPosition().getX(), AppContext.getInstance().getCircleStartPositionBoundaries().getX(), mutationRate);
+				double startPositionY = getMutatedValue(parentCircle.getStartPosition().getY(), AppContext.getInstance().getCircleStartPositionBoundaries().getYMin() - radius, AppContext.getInstance().getCircleStartPositionBoundaries().getYMax() - radius, mutationRate);
 				Vector2d startPosition = new Vector2d(startPositionX, startPositionY);
 
-				Circle circle = new Circle(appContext, frictionPercentage, radius, startPosition);
+				Circle circle = new Circle(frictionPercentage, radius, startPosition);
 				creature.getCircles().add(circle);
 			}
 
@@ -211,19 +208,19 @@ public class Population {
 				Circle circle1 = creature.getCircles().get(parentCreature.getCircles().indexOf(parentMuscle.getCircle1()));
 				Circle circle2 = creature.getCircles().get(parentCreature.getCircles().indexOf(parentMuscle.getCircle2()));
 
-				double strength = getMutatedValue(parentMuscle.getStrength(), appContext.getMuscleStrengthBoundaries(), mutationRate);
+				double strength = getMutatedValue(parentMuscle.getStrength(), AppContext.getInstance().getMuscleStrengthBoundaries(), mutationRate);
 
-				double lengthPhasesX = getMutatedValue(parentMuscle.getLengthPhases().getX(), appContext.getMuscleLengthPhasesBoundaries(), mutationRate);
-				double lengthPhasesY = getMutatedValue(parentMuscle.getLengthPhases().getY(), appContext.getMuscleLengthPhasesBoundaries(), mutationRate);
+				double lengthPhasesX = getMutatedValue(parentMuscle.getLengthPhases().getX(), AppContext.getInstance().getMuscleLengthPhasesBoundaries(), mutationRate);
+				double lengthPhasesY = getMutatedValue(parentMuscle.getLengthPhases().getY(), AppContext.getInstance().getMuscleLengthPhasesBoundaries(), mutationRate);
 				Vector2d lengthPhases = new Vector2d(lengthPhasesX, lengthPhasesY);
 
 				double clockPhasesX = getMutatedValue(parentMuscle.getClockPhases().getX(), 0d, 1d, mutationRate);
 				double clockPhasesY = getMutatedValue(parentMuscle.getClockPhases().getY(), 0d, 1d, mutationRate);
 				Vector2d clockPhases = new Vector2d(clockPhasesX, clockPhasesY);
 
-				double clockSpeed = getMutatedValue(parentMuscle.getClockSpeed(), appContext.getMuscleClockSpeedBoundaries(), mutationRate);
+				double clockSpeed = getMutatedValue(parentMuscle.getClockSpeed(), AppContext.getInstance().getMuscleClockSpeedBoundaries(), mutationRate);
 
-				Muscle muscle = new Muscle(appContext, circle1, circle2, strength, lengthPhases, clockPhases, clockSpeed);
+				Muscle muscle = new Muscle(circle1, circle2, strength, lengthPhases, clockPhases, clockSpeed);
 				creature.getMuscles().add(muscle);
 			}
 
@@ -231,15 +228,15 @@ public class Population {
 			creature.calculatePossibleConnections();
 
 			// apply structural mutations in some cases
-			if (appContext.getRandomNumberGenerator().nextDouble() < structuralMutationRate)
+			if (AppContext.getInstance().getRandomNumberGenerator().nextDouble() < structuralMutationRate)
 				creature.addRandomCircle();
-			if (appContext.getRandomNumberGenerator().nextDouble() < structuralMutationRate) {
+			if (AppContext.getInstance().getRandomNumberGenerator().nextDouble() < structuralMutationRate) {
 				creature.removeRandomCircle();
 				creature.adjustToGround();
 			}
-			if (appContext.getRandomNumberGenerator().nextDouble() < structuralMutationRate)
+			if (AppContext.getInstance().getRandomNumberGenerator().nextDouble() < structuralMutationRate)
 				creature.addRandomMuscle();
-			if (appContext.getRandomNumberGenerator().nextDouble() < structuralMutationRate)
+			if (AppContext.getInstance().getRandomNumberGenerator().nextDouble() < structuralMutationRate)
 				creature.removeRandomMuscle();
 
 			// save creature for later
@@ -259,7 +256,7 @@ public class Population {
 	}
 
 	private Creature getRandomParentCreature() {
-		double randomNumber = appContext.getRandomNumberGenerator().nextDouble();
+		double randomNumber = AppContext.getInstance().getRandomNumberGenerator().nextDouble();
 
 		// find the index of the smallest probability larger than the random number
 		// TODO: 12/11/20 implement a binary tree for every generation instead of a binary search for every creature
@@ -284,7 +281,7 @@ public class Population {
 	private double getMutatedValue(double currentValue, double boundaryMin, double boundaryMax, double mutationRate) {
 		double randomRangeMin = (boundaryMin - boundaryMax) / 2;
 		double randomRangeMax = (boundaryMax - boundaryMin) / 2;
-		return Math.min(Math.max(currentValue + appContext.getRandomNumberGenerator().getRandomRange(randomRangeMin, randomRangeMax) * mutationRate, boundaryMin), boundaryMax);
+		return Math.min(Math.max(currentValue + AppContext.getInstance().getRandomNumberGenerator().getRandomRange(randomRangeMin, randomRangeMax) * mutationRate, boundaryMin), boundaryMax);
 	}
 
 	private double getMutatedValue(double currentValue, Boundary2d boundaries, double mutationRate) {

@@ -7,8 +7,6 @@ import java.util.*;
 
 public class Creature {
 
-	private final AppContext appContext;
-
 	private final List<Circle> circles;
 	private final List<Muscle> muscles;
 	private final LinkedHashSet<Set<Circle>> possibleConnectionSet;
@@ -17,9 +15,7 @@ public class Creature {
 	private double mutationRate;
 	private double structuralMutationRate;
 
-	public Creature(AppContext appContext) {
-		this.appContext = appContext;
-
+	public Creature() {
 		circles = new ArrayList<>();
 		muscles = new ArrayList<>();
 		possibleConnectionSet = new LinkedHashSet<>();
@@ -28,8 +24,7 @@ public class Creature {
 		structuralMutationRate = 0.01d;
 	}
 
-	public Creature(AppContext appContext, double mutationRate, double structuralMutationRate) {
-		this.appContext = appContext;
+	public Creature(double mutationRate, double structuralMutationRate) {
 		this.mutationRate = mutationRate;
 		this.structuralMutationRate = structuralMutationRate;
 
@@ -47,8 +42,8 @@ public class Creature {
 	}
 
 	public void randomize() {
-		mutationRate = appContext.getRandomNumberGenerator().getRandomRange(appContext.getCreatureMutationRateBoundaries());
-		structuralMutationRate = appContext.getRandomNumberGenerator().getRandomRange(appContext.getCreatureStructuralMutationRateBoundaries());
+		mutationRate = AppContext.getInstance().getRandomNumberGenerator().getRandomRange(AppContext.getInstance().getCreatureMutationRateBoundaries());
+		structuralMutationRate = AppContext.getInstance().getRandomNumberGenerator().getRandomRange(AppContext.getInstance().getCreatureStructuralMutationRateBoundaries());
 	}
 
 	public void adjustToGround() {
@@ -106,7 +101,7 @@ public class Creature {
 	}
 
 	public void addRandomCircle() {
-		Circle circle = new Circle(appContext);
+		Circle circle = new Circle();
 		for (Circle possibleCircle : circles)
 			addPossibleConnection(circle, possibleCircle);
 		circle.randomize();
@@ -118,7 +113,7 @@ public class Creature {
 
 	public void removeRandomCircle() {
 		if (circles.size() > 1) {
-			Circle circle = circles.get(appContext.getRandomNumberGenerator().nextInt(circles.size()));
+			Circle circle = circles.get(AppContext.getInstance().getRandomNumberGenerator().nextInt(circles.size()));
 			circles.remove(circle);
 
 			possibleConnectionSet.removeIf(possibleConnection -> possibleConnection.contains(circle));
@@ -129,7 +124,7 @@ public class Creature {
 
 	public void addRandomMuscle() {
 		if (!possibleConnectionSet.isEmpty()) {
-			int index = appContext.getRandomNumberGenerator().nextInt(possibleConnectionSet.size());
+			int index = AppContext.getInstance().getRandomNumberGenerator().nextInt(possibleConnectionSet.size());
 			for (Set<Circle> possibleConnection : possibleConnectionSet)
 				if (index-- == 0) {
 					Iterator<Circle> iterator = possibleConnection.iterator();
@@ -138,7 +133,7 @@ public class Creature {
 
 					removePossibleConnection(circle1, circle2);
 
-					Muscle muscle = new Muscle(appContext, circle1, circle2);
+					Muscle muscle = new Muscle(circle1, circle2);
 					muscle.randomize();
 					muscles.add(muscle);
 
@@ -155,14 +150,14 @@ public class Creature {
 					possiblePossibleConnections.add(possibleConnection);
 
 			if (possiblePossibleConnections.size() > 0) {
-				Set<Circle> connection = possiblePossibleConnections.get(appContext.getRandomNumberGenerator().nextInt(possiblePossibleConnections.size()));
+				Set<Circle> connection = possiblePossibleConnections.get(AppContext.getInstance().getRandomNumberGenerator().nextInt(possiblePossibleConnections.size()));
 				Iterator<Circle> iterator = connection.iterator();
 				Circle circle1 = iterator.next();
 				Circle circle2 = iterator.next();
 
 				removePossibleConnection(circle1, circle2);
 
-				Muscle muscle = new Muscle(appContext, circle1, circle2);
+				Muscle muscle = new Muscle(circle1, circle2);
 				muscle.randomize();
 				muscles.add(muscle);
 			}
@@ -171,7 +166,7 @@ public class Creature {
 
 	public void removeRandomMuscle() {
 		if (!muscles.isEmpty()) {
-			Muscle muscle = muscles.get(appContext.getRandomNumberGenerator().nextInt(muscles.size()));
+			Muscle muscle = muscles.get(AppContext.getInstance().getRandomNumberGenerator().nextInt(muscles.size()));
 			muscles.remove(muscle);
 
 			addPossibleConnection(muscle.getCircle1(), muscle.getCircle2());
@@ -180,7 +175,7 @@ public class Creature {
 
 	public double getFitness() {
 		if (getOnGround())
-			return appContext.getCircleStartPositionBoundaries().getXMin();
+			return AppContext.getInstance().getCircleStartPositionBoundaries().getXMin();
 		else {
 			double fitness = 0d;
 			for (Circle circle : circles)

@@ -6,6 +6,8 @@ import com.weisbrja.simulation.Boundary4d;
 
 public class AppContext {
 
+	private static AppContext instance;
+
 	private final EventBus eventBus;
 
 	private final RandomNumberGenerator randomNumberGenerator;
@@ -27,7 +29,7 @@ public class AppContext {
 	private final Boundary2d creatureMutationRateBoundaries;
 	private final Boundary2d creatureStructuralMutationRateBoundaries;
 
-	public AppContext(EventBus eventBus, RandomNumberGenerator randomNumberGenerator, boolean stopCreaturesWhenOnGround, double gravityY, double groundDamping, double airFriction, Boundary4d circleStartPositionBoundaries, Boundary2d circleRadiusBoundaries, double maxMuscleForce, Boundary2d muscleStrengthBoundaries, Boundary2d muscleLengthPhasesBoundaries, Boundary2d muscleClockSpeedBoundaries, Boundary2d creatureMutationRateBoundaries, Boundary2d creatureStructuralMutationRateBoundaries) {
+	private AppContext(EventBus eventBus, RandomNumberGenerator randomNumberGenerator, boolean stopCreaturesWhenOnGround, double gravityY, double groundDamping, double airFriction, Boundary4d circleStartPositionBoundaries, Boundary2d circleRadiusBoundaries, double maxMuscleForce, Boundary2d muscleStrengthBoundaries, Boundary2d muscleLengthPhasesBoundaries, Boundary2d muscleClockSpeedBoundaries, Boundary2d creatureMutationRateBoundaries, Boundary2d creatureStructuralMutationRateBoundaries) {
 		this.eventBus = eventBus;
 		this.randomNumberGenerator = randomNumberGenerator;
 		this.stopCreaturesWhenOnGround = stopCreaturesWhenOnGround;
@@ -42,6 +44,14 @@ public class AppContext {
 		this.muscleClockSpeedBoundaries = muscleClockSpeedBoundaries;
 		this.creatureMutationRateBoundaries = creatureMutationRateBoundaries;
 		this.creatureStructuralMutationRateBoundaries = creatureStructuralMutationRateBoundaries;
+	}
+
+	public static void newInstance(EventBus eventBus, RandomNumberGenerator randomNumberGenerator, boolean stopCreaturesWhenOnGround, double gravityY, double groundDamping, double airFriction, Boundary4d circleStartPositionBoundaries, Boundary2d circleRadiusBoundaries, double maxMuscleForce, Boundary2d muscleStrengthBoundaries, Boundary2d muscleLengthPhasesBoundaries, Boundary2d muscleClockSpeedBoundaries, Boundary2d creatureMutationRateBoundaries, Boundary2d creatureStructuralMutationRateBoundaries) {
+		instance = new AppContext(eventBus, randomNumberGenerator, stopCreaturesWhenOnGround, gravityY, groundDamping, airFriction, circleStartPositionBoundaries, circleRadiusBoundaries, maxMuscleForce, muscleStrengthBoundaries, muscleLengthPhasesBoundaries, muscleClockSpeedBoundaries, creatureMutationRateBoundaries, creatureStructuralMutationRateBoundaries);
+	}
+
+	public static AppContext getInstance() {
+		return instance;
 	}
 
 	public EventBus getEventBus() {

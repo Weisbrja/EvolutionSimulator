@@ -14,7 +14,6 @@ dependencies {
 }
 
 application {
-	mainModule.set("com.weisbrja")
 	mainClass.set("com.weisbrja.App")
 }
 

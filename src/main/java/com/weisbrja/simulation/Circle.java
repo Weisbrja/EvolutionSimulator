@@ -6,8 +6,6 @@ import javax.vecmath.Vector2d;
 
 public class Circle {
 
-	private final AppContext appContext;
-
 	private Vector2d position;
 	private Vector2d velocity;
 	private Vector2d acceleration;
@@ -17,19 +15,16 @@ public class Circle {
 	private double frictionPercentage;
 	private double radius;
 
-	public Circle(AppContext appContext) {
-		this.appContext = appContext;
-
+	public Circle() {
 		frictionPercentage = 0.5d;
-		radius = (appContext.getCircleRadiusBoundaries().getMin() + appContext.getCircleRadiusBoundaries().getMax()) / 2d;
-		double startPositionX = (appContext.getCircleStartPositionBoundaries().getXMin() + appContext.getCircleStartPositionBoundaries().getXMax()) / 2d;
-		double startPositionY = (appContext.getCircleStartPositionBoundaries().getYMin() + appContext.getCircleStartPositionBoundaries().getYMax()) / 2d - radius;
+		radius = (AppContext.getInstance().getCircleRadiusBoundaries().getMin() + AppContext.getInstance().getCircleRadiusBoundaries().getMax()) / 2d;
+		double startPositionX = (AppContext.getInstance().getCircleStartPositionBoundaries().getXMin() + AppContext.getInstance().getCircleStartPositionBoundaries().getXMax()) / 2d;
+		double startPositionY = (AppContext.getInstance().getCircleStartPositionBoundaries().getYMin() + AppContext.getInstance().getCircleStartPositionBoundaries().getYMax()) / 2d - radius;
 		startPosition = new Vector2d(startPositionX, startPositionY);
 		reset();
 	}
 
-	public Circle(AppContext appContext, double frictionPercentage, double radius, Vector2d startPosition) {
-		this.appContext = appContext;
+	public Circle(double frictionPercentage, double radius, Vector2d startPosition) {
 		this.frictionPercentage = frictionPercentage;
 		this.radius = radius;
 		this.startPosition = startPosition;
@@ -43,10 +38,10 @@ public class Circle {
 	}
 
 	public void randomize() {
-		frictionPercentage = appContext.getRandomNumberGenerator().nextDouble();
-		radius = appContext.getRandomNumberGenerator().getRandomRange(appContext.getCircleRadiusBoundaries());
-		startPosition.setX(appContext.getRandomNumberGenerator().getRandomRange(appContext.getCircleStartPositionBoundaries().getX()) - radius);
-		startPosition.setY(appContext.getRandomNumberGenerator().getRandomRange(appContext.getCircleStartPositionBoundaries().getY()) - radius);
+		frictionPercentage = AppContext.getInstance().getRandomNumberGenerator().nextDouble();
+		radius = AppContext.getInstance().getRandomNumberGenerator().getRandomRange(AppContext.getInstance().getCircleRadiusBoundaries());
+		startPosition.setX(AppContext.getInstance().getRandomNumberGenerator().getRandomRange(AppContext.getInstance().getCircleStartPositionBoundaries().getX()) - radius);
+		startPosition.setY(AppContext.getInstance().getRandomNumberGenerator().getRandomRange(AppContext.getInstance().getCircleStartPositionBoundaries().getY()) - radius);
 		reset();
 	}
 
@@ -68,7 +63,7 @@ public class Circle {
 		}
 
 		// apply air friction to the velocity
-		velocity.scale(appContext.getAirFriction());
+		velocity.scale(AppContext.getInstance().getAirFriction());
 
 		// check if the circle would collide with the ground
 		if (position.getY() + velocity.getY() + radius > 0d) {
@@ -78,7 +73,7 @@ public class Circle {
 			position.add(velocity1);
 
 			// negate the y-velocity and scale it by the ground dampening factor
-			velocity.setY(-velocity.getY() * appContext.getGroundDamping());
+			velocity.setY(-velocity.getY() * AppContext.getInstance().getGroundDamping());
 
 			// calculate the rest of the velocity
 			Vector2d velocity2 = (Vector2d) velocity.clone();
@@ -86,7 +81,7 @@ public class Circle {
 			velocity2.scale(velocity.length() - velocity1.length());
 
 			// check if the rest y-velocity is less than or equal to the gravity-y
-			if (Math.abs(velocity2.getY()) <= appContext.getGravityY()) {
+			if (Math.abs(velocity2.getY()) <= AppContext.getInstance().getGravityY()) {
 				// set the rest y-velocity and the y-velocity to zero
 				velocity2.setY(0d);
 				velocity.setY(0d);

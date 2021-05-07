@@ -18,10 +18,10 @@ public class MainView extends Pane {
 	private boolean simulateGraphically;
 	private int creatureCount;
 
-	public MainView(AppContext appContext) {
+	public MainView() {
 		Font font = Font.getDefault();
 
-		SimulationCanvas simulationCanvas = new SimulationCanvas(appContext);
+		SimulationCanvas simulationCanvas = new SimulationCanvas();
 
 		simulateGraphically = true;
 		String simulationModeString = "Turn graphical ";
@@ -38,9 +38,9 @@ public class MainView extends Pane {
 
 			// change the simulation mode if simulating graphically
 			if (!simulateGraphically)
-				appContext.getEventBus().emit(new SimulationModeChangedEvent(simulateGraphically));
+				AppContext.getInstance().getEventBus().emit(new SimulationModeChangedEvent(simulateGraphically));
 		});
-		appContext.getEventBus().emit(new SimulationModeChangedEvent(simulateGraphically));
+		AppContext.getInstance().getEventBus().emit(new SimulationModeChangedEvent(simulateGraphically));
 
 		String creatureCountString = "Creature: ";
 		Label creatureCountLabel = new Label(creatureCountString + 0);
@@ -86,20 +86,20 @@ public class MainView extends Pane {
 
 		getChildren().addAll(simulationCanvas, vBox);
 
-		appContext.getEventBus().listenFor(SimulatorDoneEvent.class, event -> Platform.runLater(() -> {
+		AppContext.getInstance().getEventBus().listenFor(SimulatorDoneEvent.class, event -> Platform.runLater(() -> {
 			Platform.runLater(() -> creatureCountLabel.setText(creatureCountString + creatureCount));
 			creatureCount++;
 		}));
-		appContext.getEventBus().listenFor(SimulatorStartedEvent.class, event -> Platform.runLater(() -> {
+		AppContext.getInstance().getEventBus().listenFor(SimulatorStartedEvent.class, event -> Platform.runLater(() -> {
 			speciesLabel.setText(speciesString + event.getSpecies());
 			mutationRateLabel.setText(mutationRateString + event.getMutationRate());
 			structuralMutationRateLabel.setText(structuralMutationRateString + event.getStructuralMutationRate());
 		}));
-		appContext.getEventBus().listenFor(GenerationDoneEvent.class, event -> {
+		AppContext.getInstance().getEventBus().listenFor(GenerationDoneEvent.class, event -> {
 			creatureCount = 0;
 			if (simulationModeButton.isDisabled()) {
 				simulationModeButton.setDisable(false);
-				appContext.getEventBus().emit(new SimulationModeChangedEvent(simulateGraphically));
+				AppContext.getInstance().getEventBus().emit(new SimulationModeChangedEvent(simulateGraphically));
 			}
 			Platform.runLater(() -> {
 				creatureCountLabel.setText(creatureCountString + creatureCount);

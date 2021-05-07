@@ -6,8 +6,6 @@ import javax.vecmath.Vector2d;
 
 public class Muscle {
 
-	private final AppContext appContext;
-
 	private final Circle circle1;
 	private final Circle circle2;
 
@@ -20,20 +18,18 @@ public class Muscle {
 	private Vector2d clockPhases;
 	private double clockSpeed;
 
-	public Muscle(AppContext appContext, Circle circle1, Circle circle2) {
-		this.appContext = appContext;
+	public Muscle(Circle circle1, Circle circle2) {
 		this.circle1 = circle1;
 		this.circle2 = circle2;
 
-		strength = (appContext.getMuscleStrengthBoundaries().getMin() + appContext.getMuscleStrengthBoundaries().getMax()) / 2d;
-		lengthPhases = new Vector2d(appContext.getMuscleLengthPhasesBoundaries().getMin(), appContext.getMuscleLengthPhasesBoundaries().getMax());
+		strength = (AppContext.getInstance().getMuscleStrengthBoundaries().getMin() + AppContext.getInstance().getMuscleStrengthBoundaries().getMax()) / 2d;
+		lengthPhases = new Vector2d(AppContext.getInstance().getMuscleLengthPhasesBoundaries().getMin(), AppContext.getInstance().getMuscleLengthPhasesBoundaries().getMax());
 		clockPhases = new Vector2d(0d, 0.5d);
-		clockSpeed = (appContext.getMuscleClockSpeedBoundaries().getMin() + appContext.getMuscleClockSpeedBoundaries().getMax()) / 2d;
+		clockSpeed = (AppContext.getInstance().getMuscleClockSpeedBoundaries().getMin() + AppContext.getInstance().getMuscleClockSpeedBoundaries().getMax()) / 2d;
 		reset();
 	}
 
-	public Muscle(AppContext appContext, Circle circle1, Circle circle2, double strength, Vector2d lengthPhases, Vector2d clockPhases, double clockSpeed) {
-		this.appContext = appContext;
+	public Muscle(Circle circle1, Circle circle2, double strength, Vector2d lengthPhases, Vector2d clockPhases, double clockSpeed) {
 		this.circle1 = circle1;
 		this.circle2 = circle2;
 		this.strength = strength;
@@ -48,10 +44,10 @@ public class Muscle {
 	}
 
 	public void randomize() {
-		strength = appContext.getRandomNumberGenerator().getRandomRange(appContext.getMuscleStrengthBoundaries());
-		lengthPhases = new Vector2d(appContext.getRandomNumberGenerator().getRandomRange(appContext.getMuscleLengthPhasesBoundaries()), appContext.getRandomNumberGenerator().getRandomRange(appContext.getMuscleLengthPhasesBoundaries()));
-		clockPhases = new Vector2d(appContext.getRandomNumberGenerator().nextDouble(), appContext.getRandomNumberGenerator().nextDouble());
-		clockSpeed = appContext.getRandomNumberGenerator().getRandomRange(appContext.getMuscleClockSpeedBoundaries());
+		strength = AppContext.getInstance().getRandomNumberGenerator().getRandomRange(AppContext.getInstance().getMuscleStrengthBoundaries());
+		lengthPhases = new Vector2d(AppContext.getInstance().getRandomNumberGenerator().getRandomRange(AppContext.getInstance().getMuscleLengthPhasesBoundaries()), AppContext.getInstance().getRandomNumberGenerator().getRandomRange(AppContext.getInstance().getMuscleLengthPhasesBoundaries()));
+		clockPhases = new Vector2d(AppContext.getInstance().getRandomNumberGenerator().nextDouble(), AppContext.getInstance().getRandomNumberGenerator().nextDouble());
+		clockSpeed = AppContext.getInstance().getRandomNumberGenerator().getRandomRange(AppContext.getInstance().getMuscleClockSpeedBoundaries());
 	}
 
 	public void update() {
@@ -95,7 +91,7 @@ public class Muscle {
 
 	public double getForceScalingFactor(double distance, double targetLength) {
 		double forceScalingFactor = 1d - distance / targetLength;
-		return Math.min(Math.max(forceScalingFactor, -appContext.getMaxMuscleForce()), appContext.getMaxMuscleForce()) * strength;
+		return Math.min(Math.max(forceScalingFactor, -AppContext.getInstance().getMaxMuscleForce()), AppContext.getInstance().getMaxMuscleForce()) * strength;
 	}
 
 	public boolean getExpanding() {

@@ -13,16 +13,12 @@ import javax.vecmath.Vector2d;
 
 public class SimulationCanvas extends Pane {
 
-	private final AppContext appContext;
-
 	private final Canvas canvas;
 
 	private final Vector2d cameraPosition;
 	private final Vector2d cameraPositionOffset;
 
-	public SimulationCanvas(AppContext appContext) {
-		this.appContext = appContext;
-
+	public SimulationCanvas() {
 		canvas = new Canvas(1920d, 1080d);
 		getChildren().add(canvas);
 
@@ -30,8 +26,8 @@ public class SimulationCanvas extends Pane {
 		cameraPosition = (Vector2d) cameraPositionOffset.clone();
 		cameraPosition.scale(-1d);
 
-		appContext.getEventBus().listenFor(SimulationDrawBackgroundEvent.class, event -> handleDrawBackground());
-		appContext.getEventBus().listenFor(CreatureDrawEvent.class, this::handleCreatureDraw);
+		AppContext.getInstance().getEventBus().listenFor(SimulationDrawBackgroundEvent.class, event -> handleDrawBackground());
+		AppContext.getInstance().getEventBus().listenFor(CreatureDrawEvent.class, this::handleCreatureDraw);
 	}
 
 	private void handleDrawBackground() {
@@ -67,8 +63,8 @@ public class SimulationCanvas extends Pane {
 		for (int i = creatureDrawEvent.getCreature().getMuscles().size() - 1; i >= 0; i--) {
 			Muscle muscle = creatureDrawEvent.getCreature().getMuscles().get(i);
 			double alphaPercentageStart = 50d / 255d;
-			double alphaPercentageEnd = 255d / 255d;
-			double alphaPercentage = alphaPercentageStart + (alphaPercentageEnd - alphaPercentageStart) / (appContext.getMuscleStrengthBoundaries().getMax() - appContext.getMuscleStrengthBoundaries().getMin()) * (muscle.getStrength() - appContext.getMuscleStrengthBoundaries().getMin());
+			double alphaPercentageEnd = 1d;
+			double alphaPercentage = alphaPercentageStart + (alphaPercentageEnd - alphaPercentageStart) / (AppContext.getInstance().getMuscleStrengthBoundaries().getMax() - AppContext.getInstance().getMuscleStrengthBoundaries().getMin()) * (muscle.getStrength() - AppContext.getInstance().getMuscleStrengthBoundaries().getMin());
 			if (muscle.getExpanding())
 				graphicsContext.setStroke(Color.rgb(200, 50, 50, alphaPercentage));
 			else
@@ -83,8 +79,8 @@ public class SimulationCanvas extends Pane {
 		// draw the circles
 		for (int i = creatureDrawEvent.getCreature().getCircles().size() - 1; i >= 0; i--) {
 			Circle circle = creatureDrawEvent.getCreature().getCircles().get(i);
-			double grayScalePercentageStart = 255d / 255d;
-			double grayScalePercentageEnd = 0d / 255d;
+			double grayScalePercentageStart = 1d;
+			double grayScalePercentageEnd = 0d;
 			double grayScalePercentage = grayScalePercentageStart + (grayScalePercentageEnd - grayScalePercentageStart) * circle.getFrictionPercentage();
 			graphicsContext.setFill(Color.color(grayScalePercentage, grayScalePercentage, grayScalePercentage));
 			graphicsContext.fillOval(circle.getPosition().getX() - circle.getRadius() - cameraPosition.getX(), circle.getPosition().getY() - circle.getRadius() - cameraPosition.getY(), circle.getDiameter(), circle.getDiameter());

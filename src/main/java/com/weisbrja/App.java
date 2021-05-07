@@ -23,8 +23,6 @@ public class App extends Application {
 	private static final String filenameMutationRate = "mutation_rate_" + randomSeed + ".csv";
 	private static final String filenameSpecies = "species_" + randomSeed + ".csv";
 
-	private AppContext appContext;
-
 	private Population population;
 
 	public static void main(String[] args) {
@@ -56,7 +54,7 @@ public class App extends Application {
 		Boundary2d creatureMutationRateBoundaries = new Boundary2d(0.001d, 0.2d);
 		Boundary2d creatureStructuralMutationRateBoundaries = new Boundary2d(0.001d, 0.1d);
 
-		appContext = new AppContext(
+		AppContext.newInstance(
 				eventBus,
 
 				randomNumberGenerator,
@@ -79,12 +77,12 @@ public class App extends Application {
 				creatureStructuralMutationRateBoundaries
 		);
 
-		population = new Population(appContext, saveData, filenameFitness, filenameMutationRate, filenameSpecies, threadCount, simulationCycleCount);
+		population = new Population(saveData, filenameFitness, filenameMutationRate, filenameSpecies, threadCount, simulationCycleCount);
 	}
 
 	@Override
 	public void start(Stage stage) {
-		MainView mainView = new MainView(appContext);
+		MainView mainView = new MainView();
 
 		// initialize the scene
 		Scene scene = new Scene(mainView, 1920d, 1080d);
